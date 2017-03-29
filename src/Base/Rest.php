@@ -8,20 +8,19 @@ class Rest extends RestBase {
         $name = '',
         $id = null;
 
-    function __construct($apiKey){
+    function __construct($apiKey,$appId){
         parent::__construct();
         $this->apiKey = $apiKey;
+        $this->appId = $appId;
         $this->path = $this->url . $this->name . '/';
     }
 
     function setId($id){
         $this->id = $id;
-        if ($this->id)
-        {
+        if ($this->id) {
             $this->path = $this->url . $this->name . '/' . $id . '/';
         }
-        else
-        {
+        else {
             $this->path = $this->url . $this->name . '/';
         }
         return $this;

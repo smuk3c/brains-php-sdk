@@ -1,66 +1,71 @@
 <?php
 namespace Brains;
 
+use InvalidArgumentException;
+
 class Users extends Base\Rest {
 
+    public $email=NULL,
+           $first_name=NULL,
+           $last_name=NULL,
+           $birthday=NULL,
+           $gender=NULL,
+           $first_address=NULL,
+           $second_address=NULL,
+           $zip_code=NULL,
+           $city=NULL,
+           $province=NULL,
+           $country=NULL,
+           $zodiac_sign=NULL,
+           $is_bounce=NULL;
 
-    public function __construct($apiKey){
+    protected $keys = array(
+        "email",
+        "first_name",
+        "last_name",
+        "birthday",
+        "gender",
+        "first_address",
+        "second_address",
+        "zip_code",
+        "city",
+        "provience",
+        "country",
+        "zodiac_sign",
+        "is_bounce"
+    );
+
+    public function __construct($apiKey, $appId){
         $this->name = 'user';
-        parent::__construct($apiKey);
+        parent::__construct($apiKey,$appId);
     }
 
-    public function add($subscriber = null, $resubscribe = 0){
-        $subscriber['resubscribe'] = $resubscribe;
+    public function add($data=null){
+        if($this->getVal("email")==NULL)
+            throw new InvalidArgumentException('Email not valid...');
 
-        $subscriber['autoresponders'] = $this->autoresponders;
-
-        return $this->execute('POST', $subscriber);
+        return $this->execute('POST', $this->toArray());
     }
 
-    function addAll($subscribers, $resubscribe = 0)
-    {
-        $data['resubscribe'] = $resubscribe;
-        $data['subscribers'] = $subscribers;
+    public function setVal($key, $val){
+        if(property_exists($this, $key))
+            $this->{$key} = $val;
+        return $this;
+    }
 
-        if (is_null($this->autoresponders)) {
-            $this->autoresponders = false;
+    public function getVal($key){
+        return property_exists($this, $key)
+            ? $this->{$key}
+            : NULL;
+    }
+
+    public function toArray(){
+        $userArray = array();
+        foreach ($this->keys AS $key){
+            if($this->getVal($key) != NULL)
+                $userArray[$key] = $this->getVal($key);
         }
-
-        $data['autoresponders'] = $this->autoresponders;
-
-        $this->path .= 'import/';
-        return $this->execute('POST', $data);
-    }
-
-    public function get($email = null, $history = 0)
-    {
-        $this->setId(null);
-        $this->path .= '?email=' . urlencode($email);
-        if ($history)
-        {
-            $this->path .= '&history=1';
-        }
-        return $this->execute('GET');
-    }
-
-    public function remove($email = null)
-    {
-        $this->path .= '?email=' . urlencode($email);
-        return $this->execute('DELETE');
-    }
-
-    public function unsubscribe($email)
-    {
-        $previous_id = $this->id;
-        $this->setId( null );
-
-        $this->path .= 'unsubscribe/?email=' . urlencode($email);
-
-        $result = $this->execute('POST');
-
-        $this->setId( $previous_id );
-
-        return $result;
+        return $userArray;
     }
 
 

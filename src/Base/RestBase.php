@@ -15,6 +15,7 @@ class RestBase {
         $responseBody,
         $responseInfo,
         $apiKey = '',
+        $appId = '',
         $path = '';
 
     public function __construct ($url = 'http://admin.astrolife.si/brains/', $verb = 'GET') {
@@ -76,21 +77,21 @@ class RestBase {
             throw $e;
         }
 
-        return $this->responseBody;
+        return json_decode($this->responseBody, true);
     }
 
     public function buildPostBody(){
         $data = $this->requestBody;
 
-        $data['apiKey'] = $this->apiKey;
+        $data['app_id'] = $this->appId;
 
         if (!is_array($data))
         {
             throw new InvalidArgumentException('Invalid data input for postBody.  Array expected');
         }
 
-        $data = http_build_query($data, '', '&');
-        $this->requestBody = $data;
+//        $data = http_build_query($data, '', '&');
+        $this->requestBody = json_encode(array($data));
     }
 
     protected function executeGet($ch){
@@ -133,7 +134,6 @@ class RestBase {
     protected function doExecute(&$curlHandle){
         $this->setCurlOpts($curlHandle);
         $this->responseBody = curl_exec($curlHandle);
-
         if ($this->responseBody === false) {
             $this->responseBody = 'CURL errno: '.curl_errno($curlHandle).', CURL error: '.curl_error($curlHandle);
         }
@@ -145,12 +145,13 @@ class RestBase {
 
     protected function setCurlOpts(&$curlHandle){
         curl_setopt($curlHandle, CURLOPT_TIMEOUT, 10);
-        curl_setopt($curlHandle, CURLOPT_URL, $this->path);
+        curl_setopt($curlHandle, CURLOPT_URL, preg_replace('{/$}', '', $this->path));
         curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curlHandle, CURLOPT_HTTPHEADER, array ('Accept: ' . $this->acceptType));
+        curl_setopt($curlHandle, CURLOPT_HTTPHEADER, array ('Accept: ' . $this->acceptType, 'apikey: '.$this->apiKey));
 
         //curl_setopt($curlHandle, CURLOPT_SSL_VERIFYHOST, false );
         //curl_setopt($curlHandle, CURLOPT_SSL_VERIFYPEER, false );
+
         if (!ini_get('open_basedir') && !ini_get('safe_mode'))
         {
             curl_setopt($curlHandle, CURLOPT_FOLLOWLOCATION, true );
@@ -159,11 +160,11 @@ class RestBase {
 
     //TODO: Have to check how to put header with apikey
     protected function setAuth(&$curlHandle){
-        if ($this->username !== null && $this->password !== null)
-        {
-            curl_setopt($curlHandle, CURLOPT_HTTPAUTH, CURLAUTH_DIGEST);
-            curl_setopt($curlHandle, CURLOPT_USERPWD, $this->username . ':' . $this->password);
-        }
+//        if ($this->username !== null && $this->password !== null)
+//        {
+//            curl_setopt($curlHandle, CURLOPT_HTTPAUTH, CURLAUTH_DIGEST);
+//            curl_setopt($curlHandle, CURLOPT_USERPWD, $this->username . ':' . $this->password);
+//        }
     }
 
     public function getAcceptType(){
