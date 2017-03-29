@@ -1,7 +1,6 @@
 {
     "name": "smuk3c/brains-php-sdk",
     "description": "PHP sdk for brains system",
-    "type": "no",
     "authors": [
         {
             "name": "Leo",
