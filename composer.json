@@ -1,0 +1,13 @@
+{
+    "name": "smuk3c/brains-php-sdk",
+    "description": "PHP sdk for brains system",
+    "type": "no",
+    "authors": [
+        {
+            "name": "Leo",
+            "email": "leo@studioface.si"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {}
+}
