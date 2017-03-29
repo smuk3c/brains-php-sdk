@@ -1,7 +1,7 @@
 # composer stuff
 composer.phar
 composer.lock
-# vendor/*
+vendor/*
 
 # exclude local config overrides
 local.php
