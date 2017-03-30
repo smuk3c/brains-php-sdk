@@ -19,10 +19,24 @@ try {
     $user->setVal("gender", "male");
     $user->setVal("country", "SI");
 
+    $user->setFbId("100008000");
+    $user->setFbId("100008000");
+    $user->setPuschrewId("10000000");
+    $user->setPuschrewId("10000000");
+    $user->setPhoneNumber("040527265");
+    $user->setPhoneNumber("386040527265");
+    $user->setPhoneNumber("38640527265");
+    $user->setPhoneNumber("386405272651");
+
+    $user->setSubscription(false, "192.168.1.1", NULL, date("Y-m-d H:i:s"));
+    $user->setSubscription(true, "192.168.1.1", NULL, date("Y-m-d H:i:s"));
 
     echo "<pre>";
-    print_r($user->add());
+//    print_r($user->add());
+    print_r($user->getByPushcrewId("10000000"));
     echo "</pre>";
+
+
 
 } catch (Exception $e) {
     echo 'Caught exception: ',  $e->getMessage(), "\n";

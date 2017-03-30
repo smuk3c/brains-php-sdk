@@ -83,19 +83,27 @@ class RestBase {
     public function buildPostBody(){
         $data = $this->requestBody;
 
-        $data['app_id'] = $this->appId;
+        switch (strtoupper($this->verb)){
+            case "GET":
+                $this->requestBody = $data;
+                break;
+            default:
+                $data['app_id'] = $this->appId;
 
-        if (!is_array($data))
-        {
-            throw new InvalidArgumentException('Invalid data input for postBody.  Array expected');
-        }
+                if (!is_array($data))
+                {
+                    throw new InvalidArgumentException('Invalid data input for postBody.  Array expected');
+                }
 
 //        $data = http_build_query($data, '', '&');
-        $this->requestBody = json_encode(array($data));
+                $this->requestBody = json_encode(array($data));
+                break;
+        }
+
     }
 
     protected function executeGet($ch){
-        $this->path .= ( strpos( $this->path, '?' ) === false ? '?' : '&' ) . $this->requestBody;
+        $this->path .= ( strpos( $this->path, '/' ) === false ? '' : '/' ) . $this->requestBody;
 
         $this->doExecute($ch);
     }
